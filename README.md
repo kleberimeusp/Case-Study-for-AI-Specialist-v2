@@ -1,4 +1,4 @@
-Arquitetura para **Local (Ollama)**, o README precisa ser totalmente reescrito para refletir os novos pré-requisitos (instalação do Ollama, download de modelos) e a eliminação da dependência da OpenAI.
+Arquitetura para **Local (Ollama)**, o README precisa ser totalmente para refletir os novos pré-requisitos (instalação do Ollama, download de modelos) e a eliminação da dependência da OpenAI.
 
 Aqui está o **README.md** definitivo para a versão "Local LLM Edition" da sua POC.
 
