@@ -1,163 +1,154 @@
-Arquitetura para **Local (Ollama)**, o README precisa ser totalmente para refletir os novos pré-requisitos (instalação do Ollama, download de modelos) e a eliminação da dependência da OpenAI.
+Entendido, vou preparar um README completo e renovado. Ele incluirá todas as seções importantes e informações relevantes. O novo README será claro, conciso e informativo.
 
-Aqui está o **README.md** definitivo para a versão "Local LLM Edition" da sua POC.
+
+Entendido, vou preparar um README completo e renovado. Ele incluirá todas as seções importantes e informações relevantes. O novo README será claro, conciso e informativo.
+
+
+Entendido! Vou refazer o README completo, garantindo que todas as informações estejam claras e organizadas. Prepararei uma versão detalhada e fácil de seguir.
+
+
+Aqui está o **README.md** final e definitivo, atualizado para refletir a arquitetura de **Alta Performance** (Parquet + FAISS Local) e o uso do **Olist Dataset**.
+
+Este documento está pronto para ser o "cartão de visitas" do seu projeto no GitHub.
 
 ---
 
-# 🦙 E-commerce Intelligent Chatbot (Local LLM Edition)
+# ⚡ E-commerce Intelligent Chatbot (High Performance Edition)
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
 ![Streamlit](https://img.shields.io/badge/Frontend-Streamlit-red)
 ![Ollama](https://img.shields.io/badge/Backend-Ollama_Local-orange)
 ![Llama 3](https://img.shields.io/badge/Model-Llama_3_8B-purple)
-![Cost](https://img.shields.io/badge/Cost-Free-green)
+![Performance](https://img.shields.io/badge/Data-Parquet_%2B_FAISS-green)
 
 ## 📋 Visão Geral Executiva
 
-Esta Prova de Conceito (POC) demonstra uma solução de **IA Generativa Híbrida** rodando 100% localmente. O projeto resolve o desafio de custos de API e privacidade de dados, utilizando modelos open-source (Llama 3) para atender clientes de e-commerce.
+Esta Prova de Conceito (POC) demonstra uma solução de **IA Generativa Híbrida** de alta performance aplicada ao dataset real da **Olist**. O sistema roda 100% localmente com latência mínima, graças a uma arquitetura de pré-processamento de dados.
 
-A arquitetura implementa um sistema de **Roteamento Inteligente** que diferencia:
-1.  **Busca Semântica (RAG):** Para recomendação e descrição de produtos (Dados Não-Estruturados).
-2.  **Análise de Dados (Agentes):** Para consulta de status de pedidos e prazos (Dados Estruturados).
+A solução resolve o problema de lentidão em LLMs locais utilizando:
+1.  **Persistência Vetorial:** Índice FAISS pré-calculado (sem vetorização em tempo real).
+2.  **Dados Otimizados:** Leitura de arquivos Parquet (binário) em vez de CSV.
+3.  **Roteamento Híbrido:**
+    *   **RAG (Busca Semântica):** Para recomendação de produtos.
+    *   **Agente Pandas:** Para análise estatística de pedidos.
 
 ---
 
-## 🏗️ Arquitetura da Solução
-
-O sistema elimina a dependência de nuvem (OpenAI) substituindo-a pelo runtime local **Ollama**.
+## 🏗️ Arquitetura Otimizada
 
 ```mermaid
 flowchart LR
-    User[Usuário] --> UI[Streamlit UI]
-    UI --> Router{Classificador}
-    
-    subgraph "Local Inference (Ollama)"
-    Router -- "Produtos" --> RAG[RAG Pipeline]
-    RAG --> Embed[nomic-embed-text]
-    Embed --> VectorDB[(FAISS)]
-    
-    Router -- "Pedidos" --> Agent[Pandas Agent]
-    Agent --> Llama3[LLM: Llama 3]
+    subgraph "Build Time (Offline)"
+    CSV[CSVs Olist] --> ETL[build_data.py]
+    ETL --> Parquet[(Arquivos Parquet)]
+    ETL --> FAISS[(Índice Vetorial)]
     end
+
+    subgraph "Run Time (Online)"
+    User --> UI[Streamlit]
+    UI --> Router{Router}
+    Router -- "Produtos" --> RAG
+    Router -- "Pedidos" --> Agent
     
-    VectorDB --> Llama3
-    Llama3 --> UI
+    Parquet --> Agent
+    FAISS --> RAG
+    end
 ```
 
 ---
 
-## 💻 Pré-requisitos de Hardware
+## 💻 Pré-requisitos
 
-Como a IA roda na sua máquina, recomenda-se:
-*   **RAM:** Mínimo 8GB (16GB Recomendado).
-*   **Processador:** Recente (Intel i5/i7, AMD Ryzen ou Apple Silicon M1/M2/M3).
-*   **Espaço em Disco:** ~6GB livres (para os modelos).
+*   **Hardware:** Mínimo 8GB RAM (16GB Recomendado).
+*   **Software:** Python 3.10+, Git e [Ollama](https://ollama.com).
 
 ---
 
-## 🚀 Guia de Instalação Passo-a-Passo
+## 🚀 Guia de Instalação e Execução
 
-### Passo 1: Configurar o Ollama (O "Cérebro" Local)
-
-1.  Baixe e instale o **Ollama** em [ollama.com](https://ollama.com).
-2.  Após instalar, abra seu terminal (PowerShell ou CMD) e baixe os modelos necessários:
-
-    ```bash
-    # Baixa o modelo de linguagem (LLM) - ~4.7GB
-    ollama pull llama3
-
-    # Baixa o modelo de embeddings (para o RAG) - Leve
-    ollama pull nomic-embed-text
-    ```
-3.  **Verifique se está rodando:** Mantenha o aplicativo Ollama aberto (ícone na barra de tarefas).
-
-### Passo 2: Clonar e Preparar o Projeto
-
-1.  Clone este repositório:
-    ```bash
-    git clone https://github.com/seu-usuario/ecommerce-chatbot-local.git
-    cd ecommerce-chatbot-local
-    ```
-
-2.  (Opcional) Crie um ambiente virtual:
-    ```bash
-    python -m venv venv
-    # Windows:
-    .\venv\Scripts\activate
-    # Linux/Mac:
-    source venv/bin/activate
-    ```
-
-### Passo 3: Instalar Dependências Python
-
-Instale as bibliotecas necessárias (versões fixadas para estabilidade):
-
+### 1. Configurar o Cérebro (Ollama)
+Baixe o Ollama e execute no terminal:
 ```bash
-pip install -r requirements.txt
+ollama pull llama3
+ollama pull nomic-embed-text
 ```
 
-### Passo 4: Executar a Aplicação
+### 2. Clonar o Repositório
+```bash
+git clone https://github.com/seu-usuario/ecommerce-chatbot-olist.git
+cd ecommerce-chatbot-olist
+```
 
+### 3. Preparar os Dados (ETL)
+1.  Crie uma pasta `datasets_case` na raiz.
+2.  Baixe o [Dataset da Olist](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) e extraia os CSVs lá.
+3.  Instale as dependências:
+    ```bash
+    pip install -r requirements.txt
+    ```
+4.  **Execute o script de build (Apenas uma vez):**
+    *Este passo converte os CSVs gigantes em Parquet e cria o índice neural.*
+    ```bash
+    python build_data.py
+    ```
+
+### 4. Executar a Aplicação
 ```bash
 streamlit run app.py
 ```
 
 ---
 
-## 🧪 Como Testar
+## 🧪 Casos de Teste (Performance)
 
-A interface abrirá no seu navegador. Tente as seguintes interações para testar os dois "lados" do cérebro da IA:
+### 🛍️ RAG (Produtos) - *Resposta Rápida*
+*   *"Me indique um relógio barato."*
+*   *"Quero comprar algo para decorar meu jardim."*
+*   *"Qual o preço médio dos perfumes?"*
 
-### 1. Teste de Produtos (Usa RAG + Vector Store)
-*O modelo busca no catálogo por similaridade.*
-*   *"Estou procurando um tênis para correr maratonas."*
-*   *"Você tem algum fone que cancela barulho?"*
-*   *"Me recomende uma cadeira para trabalhar o dia todo."*
-
-### 2. Teste de Pedidos (Usa Agente + Pandas)
-*O modelo lê a tabela, filtra dados e calcula datas.*
-*   *"Qual o status do pedido 5005?"*
+### 📦 Agente (Pedidos) - *Análise Precisa*
+*   *"Qual o status do pedido `e481f51cbdc54678b7cc49136f2d6af7`?"*
 *   *"Quantos pedidos foram cancelados?"*
-*   *"O pedido do cliente 3 já foi entregue?"*
+*   *"Qual a soma total de todos os pedidos?"*
 
 ---
 
-## 📂 Estrutura do Código
+## 📂 Estrutura do Projeto
 
 ```text
-ecommerce-chatbot-local/
+ecommerce-chatbot-olist/
 │
-├── app.py                 # Interface Principal (Streamlit)
-├── requirements.txt       # Lista de dependências
+├── app.py                 # Interface Otimizada
+├── build_data.py          # Script de ETL (CSV -> Parquet/FAISS)
+├── processed_data/        # Dados binários gerados (GitIgnore)
+├── datasets_case/         # Dados brutos (GitIgnore)
 │
 └── src/
-    ├── data_generator.py  # Gera dados sintéticos (Produtos/Pedidos)
-    ├── rag_engine.py      # Configuração do RAG com OllamaEmbeddings
-    ├── agent_engine.py    # Configuração do Agente com ChatOllama
-    └── router.py          # Lógica de decisão (If/Else Keywords)
+    ├── data_loader.py     # Carregador de Parquet
+    ├── rag_engine.py      # Carregador de FAISS
+    ├── agent_engine.py    # Agente Pandas
+    └── router.py          # Classificador de Intenção
 ```
 
 ---
 
-## ⚠️ Troubleshooting (Problemas Comuns)
+---
 
-**Erro: "Connection refused" ou falha ao conectar**
-*   **Causa:** O Ollama não está rodando.
-*   **Solução:** Abra o aplicativo Ollama no seu computador ou rode `ollama serve` no terminal.
-
-**Erro: "Model not found"**
-*   **Causa:** Você esqueceu de baixar os modelos.
-*   **Solução:** Rode `ollama pull llama3` e `ollama pull nomic-embed-text`.
-
-**Lentidão na resposta**
-*   **Causa:** Rodar LLMs localmente exige CPU/GPU.
-*   **Obs:** A primeira pergunta pode demorar mais pois o sistema está carregando o modelo na memória RAM.
+## ⚠️ Notas Técnicas
+*   **Performance:** Para garantir fluidez em máquinas locais, o `data_loader.py` limita o carregamento a uma amostra dos dados (1000 produtos / 5000 pedidos). Para usar o dataset completo, remova os `.head()` no código.
+*   **Primeira Execução:** A primeira pergunta pode demorar alguns segundos enquanto o modelo é carregado na memória RAM.
 
 ---
 
 ### Chatbot POC
 
 ![X](img/01.png)
+
+![X](img/02.png)
+
+![X](img/03.png)
+
+![X](img/04.png)
 
 ---
 
@@ -167,4 +158,5 @@ ecommerce-chatbot-local/
 *Applied AI Engineer*
 
 ---
+
 *Projeto desenvolvido como POC para demonstrar viabilidade de IA Generativa Local (Privacy-First).*
