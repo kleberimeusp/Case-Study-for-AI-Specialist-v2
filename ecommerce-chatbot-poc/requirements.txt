@@ -1,0 +1,9 @@
+streamlit
+pandas
+langchain==0.2.14
+langchain-community==0.2.12
+langchain-core==0.2.33
+langchain-experimental==0.0.64
+langchain-ollama==0.1.1
+faiss-cpu
+tabulate
