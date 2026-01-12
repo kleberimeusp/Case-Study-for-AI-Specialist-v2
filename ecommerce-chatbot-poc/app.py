@@ -40,7 +40,7 @@ if "rag_chain" not in st.session_state:
                 
             st.success("Sistema Online! 🚀")
         except Exception as e:
-            st.error(f"Erro crítico: {e}")
+            st.error(f"Erro crítico na inicialização: {e}")
             st.stop()
 
 # --- Chat ---
@@ -58,22 +58,33 @@ if prompt := st.chat_input("Digite sua pergunta..."):
     intent = route_query(prompt)
     
     with st.chat_message("assistant"):
-        with st.spinner(f"Processando ({intent})..."):
-            try:
-                response_text = ""
-                
-                if intent == "products":
-                    # RAG
+        try:
+            response_text = ""
+            
+            # CASO 1: PRODUTOS (RAG)
+            if intent == "products":
+                with st.spinner("Consultando catálogo inteligente..."):
                     result = st.session_state.rag_chain.invoke({"query": prompt})
                     response_text = result['result']
-                    
-                elif intent == "orders":
-                    # Agente
+            
+            # CASO 2: PEDIDOS (AGENTE FAST TRACK)
+            elif intent == "orders":
+                # O st.status cria uma caixinha animada que mostra o progresso
+                with st.status("Analisando dados...", expanded=True) as status:
+                    st.write("Identificando intenção...")
+                    # Chama nosso FastPandasEngine
                     response_text = st.session_state.pandas_agent.run(prompt)
-                
-                st.write(response_text)
-                st.session_state.messages.append({"role": "assistant", "content": response_text})
-                
-            except Exception as e:
-                st.error(f"Erro na execução: {e}")
-                st.info("Dica: Se o erro persistir, tente uma pergunta mais simples.")
+                    
+                    # Atualiza o visual
+                    if "Análise IA" in response_text:
+                        status.update(label="Cálculo Complexo Concluído", state="complete", expanded=False)
+                    else:
+                        status.update(label="Consulta Instantânea", state="complete", expanded=False)
+            
+            # Exibe e salva a resposta
+            st.write(response_text)
+            st.session_state.messages.append({"role": "assistant", "content": response_text})
+            
+        except Exception as e:
+            st.error(f"Erro na execução: {e}")
+            st.info("Dica: Tente reformular sua pergunta de forma mais direta.")

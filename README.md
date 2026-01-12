@@ -137,7 +137,7 @@ ecommerce-chatbot-olist/
 
 ![X](img/03.png)
 
-![X](img/04.png)
+![X](img/04_.png)
 
 ---
 
