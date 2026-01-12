@@ -1,15 +1,4 @@
-Entendido, vou preparar um README completo e renovado. Ele incluirá todas as seções importantes e informações relevantes. O novo README será claro, conciso e informativo.
-
-
-Entendido, vou preparar um README completo e renovado. Ele incluirá todas as seções importantes e informações relevantes. O novo README será claro, conciso e informativo.
-
-
-Entendido! Vou refazer o README completo, garantindo que todas as informações estejam claras e organizadas. Prepararei uma versão detalhada e fácil de seguir.
-
-
-Aqui está o **README.md** final e definitivo, atualizado para refletir a arquitetura de **Alta Performance** (Parquet + FAISS Local) e o uso do **Olist Dataset**.
-
-Este documento está pronto para ser o "cartão de visitas" do seu projeto no GitHub.
+Está o **README.md** final e definitivo, atualizado para refletir a arquitetura de **Alta Performance** (Parquet + FAISS Local) e o uso do **Olist Dataset**.
 
 ---
 
